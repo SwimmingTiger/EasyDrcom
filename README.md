@@ -18,6 +18,32 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
+###民院修改版说明
+---
+该客户端已针对大连民族学院的网络环境进行修改，适用于民院宿舍网等仅需802.1x认证就能登陆的地区。
+
+####编译&安装方法：
+
+    Ubuntu用户直接执行 "./install" 命令即可，该脚本可自动安装依赖包并进行编译。
+
+    若您使用的不是Ubuntu，请自行安装g++编译器和libpcap-dev包，之后再执行 "./install"。若出现apt-get命令找不到的提示，忽略即可。
+
+    复制文件到 "/etc" 和 "/usr/local/bin" 需要root权限，固 "./install" 会调用 sudo 命令执行操作，请根据屏幕提示输入当前用户的密码。
+
+    若系统内无 sudo 命令，请切换到 root 用户并执行 "./install_root" 命令进行安装。
+
+####使用说明：
+    
+    首次使用需要配置登陆用户名和密码，用任意编辑器打开 "/etc/EasyDrcom.conf" 把用户名和密码修改为自己的即可。
+
+    上线的命令为 "drcom"，下线的命令为 "drcom off"。
+
+    由于网络操作需要root权限，drcom命令会使用sudo执行操作，故你可能需要输入当前用户的密码才能继续。若您是用 "./install_root" 进行的安装，请切换到root用户执行drcom命令。
+
+####老虎会游泳修改于甲午年十月廿二
+
+项目已修改，以下说明为原作者说明，仅供参考。
+
 ###What's EasyDrcom?
 ---
 **EasyDrcom** 是 **_Shindo_** 编写的为哈尔滨工业大学（威海）量身定制的**第三方Dr.COM客户端**，可在教学区、家属区、学生区使用，可运行于_Windows, Mac OS X, Linux_（包括_OpenWrt_）。 

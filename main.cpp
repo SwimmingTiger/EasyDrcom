@@ -349,6 +349,7 @@ int main(int argc, const char * argv[])
     auto clog_def = std::clog.rdbuf();
     auto cout_def = std::cout.rdbuf();
     auto cerr_def = std::cerr.rdbuf();
+    bool offline = false;
 #ifdef OPENWRT
     std::string log_path = "/tmp/EasyDrcom.log";
 #else
@@ -357,7 +358,9 @@ int main(int argc, const char * argv[])
     
     for (int i = 1; i < argc; i++)
     {
-        if (!strcmp(argv[i], "-b"))
+        if (!strcmp(argv[i], "off"))
+            offline = true;
+        else if (!strcmp(argv[i], "-b"))
             background = true;
         else if (!strcmp(argv[i], "-r"))
             redirect_to_null = true;
@@ -401,10 +404,10 @@ int main(int argc, const char * argv[])
 	WSADATA	wsa;
 	WSAStartup(MAKEWORD(2, 2), &wsa);
 #endif
-    
+
     try
     {
-        eap = std::shared_ptr<eap_dealer>(new eap_dealer(conf.local.nic, conf.local.mac, conf.local.ip, conf.general.username, conf.general.password)); // the fucking "Segmentation fault", so we must have to use this line all the time!!!
+        eap = std::shared_ptr<eap_dealer>(new eap_dealer(conf.local.nic, conf.local.mac, conf.local.ip, conf.general.username, conf.general.password, conf.general.mode==3, offline)); // the fucking "Segmentation fault", so we must have to use this line all the time!!!
         
         if (!conf.fake.enable)
         {

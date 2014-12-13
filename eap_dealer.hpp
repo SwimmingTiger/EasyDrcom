@@ -157,9 +157,12 @@ private:
 
 class eap_dealer
 {
+protected:
+    bool m_exitAfterSuccess;
+    bool m_exitAfterLogout;
 public:
-    eap_dealer(std::string nic, std::vector<uint8_t> local_mac, std::string local_ip, std::string identity, std::string key) : key(str_to_vec(key)), // the local_ip can be used to detect 'IP conflict!'
-        local_mac(local_mac), pcap(nic, local_mac)
+    eap_dealer(std::string nic, std::vector<uint8_t> local_mac, std::string local_ip, std::string identity, std::string key, bool exitAfterSuccess = false, bool exitAfterLogout = false) : key(str_to_vec(key)), // the local_ip can be used to detect 'IP conflict!'
+        local_mac(local_mac), pcap(nic, local_mac), m_exitAfterSuccess(exitAfterSuccess), m_exitAfterLogout(exitAfterLogout)
     {
         auto ip = str_ip_to_vec(local_ip);
         
@@ -257,6 +260,10 @@ public:
             EAP_SHOW_PACKET_TYPE("Logoff");
             
             // We needn't to deal with the packet back
+            if (m_exitAfterLogout)
+            {
+                exit(0);
+            }
             return 0;
         };
         
@@ -408,7 +415,11 @@ public:
             
             // In fact, this condition is always true
             if (eap_header->eap_code == 0x03) // Success
+            {
                 EAP_LOG_INFO("Gateway returns: Success" << std::endl);
+                if (m_exitAfterSuccess)
+                    exit(0);
+            }
             
             return 0;
         };
