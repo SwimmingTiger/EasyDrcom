@@ -1,5 +1,5 @@
 #!/bin/sh
-yum install g++ libpcap-devel
+yum install g++ libpcap-devel libboost-devel
 echo ""
 echo "Building EasyDrcom..."
 g++ -DLINUX -Os -s -std=c++0x -o EasyDrcom md5.c main.cpp -lpcap -lpthread
