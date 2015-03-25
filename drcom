@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo EasyDrcom -c /etc/EasyDrcom.conf -o /dev/null $1
+EasyDrcom -c /etc/EasyDrcom.conf -o /dev/null $1

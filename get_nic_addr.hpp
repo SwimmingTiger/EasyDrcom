@@ -124,6 +124,7 @@ std::string get_ip_address(std::string nic)
 	{
 		bool found = false;
 		for (auto ptr = AdapterInfo; ptr != NULL; ptr = ptr->Next)
+            std::cout << "NIC: " << nic.c_str() << endl;
 			if (strstr(nic.c_str(), ptr->AdapterName))
 			{
 				ip = ptr->IpAddressList.IpAddress.String;
