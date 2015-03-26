@@ -18,6 +18,9 @@
  
 #include <stdio.h>
 #include <pcap.h>
+#include <windows.h>
+#include <iphlpapi.h>
+#undef WIN32
 
 #if defined(WIN32)
 #include <windows.h>
@@ -42,105 +45,72 @@ std::vector<uint8_t> get_mac_address(std::string mac_str)
 {
 	std::vector<uint8_t> ret(6, 0);
     
-    sscanf(mac_str.c_str(), "%x-%x-%x-%x-%x-%x", &ret[0], &ret[1], &ret[2], &ret[3], &ret[4], &ret[5]);
+    sscanf(mac_str.c_str(), "%x:%x:%x:%x:%x:%x", &ret[0], &ret[1], &ret[2], &ret[3], &ret[4], &ret[5]);
     
 	return ret;
 }
 
-//long型ip转点分十进制
-std::string ipToStr(unsigned long in)
+void SelectNIC(int id, std::string &nic, std::string &mac, std::string &ip)
 {
-    char ch[16];
-    
-    union
-    {
-        unsigned long in;
-        unsigned char x[4];
-    } ip;
-    
-    ip.in = in;
-    sprintf(ch, "%u.%u.%u.%u", ip.x[0], ip.x[1], ip.x[2], ip.x[3]);
-    
-    return ch;
-}
-
-//获取设备ip
-std::string getDevAddr(pcap_if_t *d) 
-{ 
-    pcap_addr_t *a; 
-
-    for(a=d->addresses; a; a=a->next)
-    {
-        switch(a->addr->sa_family) 
-        { 
-        case AF_INET:
-            if (a->addr)
-            {
-                return ipToStr(((struct sockaddr_in *)a->addr)->sin_addr.s_addr);
-            }
-            break; 
-        default: 
-            break; 
-        }
-    }
-
-    return "0.0.0.0";
-}
-
-void printAllDevs(int id, std::string &nic, std::string &ip)
-{
-    pcap_if_t *alldevs;
-    pcap_if_t *d;
-    int i = 0;
-    char errbuf[PCAP_ERRBUF_SIZE];
-    
     printf("\nNIC List:\n");
     
-    /* 获取本地机器设备列表 */
-    if (pcap_findalldevs(&alldevs, errbuf) == -1)
-    {
-        fprintf(stderr,"Error in pcap_findalldevs_ex: %s\n", errbuf);
-        return;
-    }
-    
-    /* 打印列表 */
-    for(d = alldevs; d != NULL; d= d->next)
-    {
-        i++;
-        
-        if (id == i)
-        {
-            nic = d->name;
-            ip = getDevAddr(d);
-            printf("*");
-        }
-        else
-        {
-            printf(" ");
-        }
-        
-        printf("%d. ", i, d->name);
+	PIP_ADAPTER_INFO pIpAdapterInfo  = (PIP_ADAPTER_INFO)malloc(sizeof(IP_ADAPTER_INFO));
+	unsigned long stSize = sizeof(IP_ADAPTER_INFO);
+	int nRel = GetAdaptersInfo(pIpAdapterInfo,&stSize);
+    int num = 0;
 
-        if (d->description)
-            printf("%s\n", d->description);
-        else
-            printf("No description available\n");
-        
-        //std::cout << getDevAddr(d) << std::endl;
-    }
+	if (ERROR_BUFFER_OVERFLOW == nRel) {
+		free(pIpAdapterInfo);
+		//重新申请内存
+		pIpAdapterInfo = (PIP_ADAPTER_INFO)malloc(stSize);
+		nRel=GetAdaptersInfo(pIpAdapterInfo,&stSize); 
+	}
+
+	if (ERROR_SUCCESS == nRel) {
+		num ++;
+
+		while (pIpAdapterInfo) {
+			if (id == num)
+			{
+				int i = pIpAdapterInfo->AddressLength - 6;
+				char tmpMac[18];
+				sprintf(tmpMac, "%02X:%02X:%02X:%02X:%02X:%02X", pIpAdapterInfo->Address[i], pIpAdapterInfo->Address[i+1], pIpAdapterInfo->Address[i+2],
+					pIpAdapterInfo->Address[i+3], pIpAdapterInfo->Address[i+4], pIpAdapterInfo->Address[i+5]);
+				mac = tmpMac;
+				
+				if (strcmp(pIpAdapterInfo->IpAddressList.IpAddress.String, "") != 0)
+				{
+					ip = pIpAdapterInfo->IpAddressList.IpAddress.String;
+				}
+
+				nic = "\\Device\\NPF_";
+				nic += pIpAdapterInfo->AdapterName;
+
+				printf("*");
+			}
+			else
+			{
+				printf(" ");
+			}
+
+			printf("%d. %s\n", num, pIpAdapterInfo->Description);
+			pIpAdapterInfo = pIpAdapterInfo->Next;
+			num ++;
+		}
+	}
+
+	//释放内存空间
+	if (pIpAdapterInfo)
+	{
+		free (pIpAdapterInfo);
+	}
     
-    if (i == 0)
+    if (num == 0)
     {
-        printf("No interfaces found! Make sure WinPcap is installed.\n");
-        return;
-    } else {
-        printf("\n");
+        printf("No interfaces found!\n");
     }
     
-    /* 不再需要设备列表了，释放它 */
-    pcap_freealldevs(alldevs);
-    
-    return;
+    printf("\n");
 }
 
 #endif

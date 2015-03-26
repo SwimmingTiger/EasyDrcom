@@ -108,10 +108,8 @@ int read_config(std::string path)
         conf.general.mode = pt.get<int>("General.Mode");
         conf.general.username = pt.get<std::string>("General.UserName");
         conf.general.password = pt.get<std::string>("General.PassWord");
-        printAllDevs(pt.get<int>("Local.NicId"), conf.local.nic, conf.local.ip);
-        //conf.local.nic = pt.get<std::string>("Local.NIC");
-        //conf.local.ip = pt.get<std::string>("Local.IPAddress");
-        conf.local.mac_str = pt.get<std::string>("Local.MacAddress");
+        SelectNIC(pt.get<int>("Local.NicId"), conf.local.nic, conf.local.mac_str, conf.local.ip);
+        conf.local.mac = get_mac_address(conf.local.mac_str);
     }
     catch (std::exception& e) {
         SYS_LOG_ERR("Failed to read '" << path << "' - " << e.what() << std::endl);
@@ -144,9 +142,6 @@ int read_config(std::string path)
     SYS_LOG_DBG("Local.EAPTimeout = " << conf.local.eap_timeout << ", Local.UDPTimeout = " << conf.local.udp_timeout << std::endl);
     
     try {
-        //conf.local.ip = get_ip_address(conf.local.nic);
-        conf.local.mac = get_mac_address(conf.local.mac_str);
-        
         SYS_LOG_INFO("Fetch NIC IP & MAC successfully." << std::endl);
         SYS_LOG_INFO("Local.IP = " << conf.local.ip << ", Local.MAC = " << hex_to_str(&conf.local.mac[0], 6, ':') << std::endl);
     }
