@@ -108,8 +108,9 @@ int read_config(std::string path)
         conf.general.mode = pt.get<int>("General.Mode");
         conf.general.username = pt.get<std::string>("General.UserName");
         conf.general.password = pt.get<std::string>("General.PassWord");
-        conf.local.nic = pt.get<std::string>("Local.NIC");
-        conf.local.ip = pt.get<std::string>("Local.IPAddress");
+        printAllDevs(pt.get<int>("Local.NicId"), conf.local.nic, conf.local.ip);
+        //conf.local.nic = pt.get<std::string>("Local.NIC");
+        //conf.local.ip = pt.get<std::string>("Local.IPAddress");
         conf.local.mac_str = pt.get<std::string>("Local.MacAddress");
     }
     catch (std::exception& e) {
@@ -347,8 +348,6 @@ void offline_func()
 
 int main(int argc, const char * argv[])
 {
-    printAllDevs();
-    
     int ret = 0;
     bool background = false, redirect_to_null = false;
     std::string config_path = "EasyDrcom.conf";
@@ -398,8 +397,6 @@ int main(int argc, const char * argv[])
     }
     
     SYS_LOG_INFO("EasyDrcom " << VERSION << " (build on " << __DATE__ << " " << __TIME__ << "), Code by Shindo." << std::endl << std::endl);
-    
-    printAllDevs();
     
     SYS_LOG_INFO("Initializing..." << std::endl);
     SYS_LOG_INFO("Loading config from '" << config_path << "'..." << std::endl);

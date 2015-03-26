@@ -47,14 +47,54 @@ std::vector<uint8_t> get_mac_address(std::string mac_str)
 	return ret;
 }
 
-void printAllDevs()
+//long型ip转点分十进制
+std::string ipToStr(unsigned long in)
+{
+    char ch[16];
+    
+    union
+    {
+        unsigned long in;
+        unsigned char x[4];
+    } ip;
+    
+    ip.in = in;
+    sprintf(ch, "%u.%u.%u.%u", ip.x[0], ip.x[1], ip.x[2], ip.x[3]);
+    
+    return ch;
+}
+
+//获取设备ip
+std::string getDevAddr(pcap_if_t *d) 
+{ 
+    pcap_addr_t *a; 
+
+    for(a=d->addresses; a; a=a->next)
+    {
+        switch(a->addr->sa_family) 
+        { 
+        case AF_INET:
+            if (a->addr)
+            {
+                return ipToStr(((struct sockaddr_in *)a->addr)->sin_addr.s_addr);
+            }
+            break; 
+        default: 
+            break; 
+        }
+    }
+
+    return "0.0.0.0";
+}
+
+void printAllDevs(int id, std::string &nic, std::string &ip)
 {
     pcap_if_t *alldevs;
     pcap_if_t *d;
     int i = 0;
     char errbuf[PCAP_ERRBUF_SIZE];
     
-    printf("NIC List:\n");
+    printf("\nNIC List:\n");
     
     /* 获取本地机器设备列表 */
     if (pcap_findalldevs(&alldevs, errbuf) == -1)
@@ -66,16 +106,32 @@ void printAllDevs()
     /* 打印列表 */
     for(d = alldevs; d != NULL; d= d->next)
     {
-        printf("%d. %s", ++i, d->name);
-        if (d->description)
-            printf(" (%s)\n", d->description);
+        i++;
+        
+        if (id == i)
+        {
+            nic = d->name;
+            ip = getDevAddr(d);
+            printf("*");
+        }
         else
-            printf(" (No description available)\n");
+        {
+            printf(" ");
+        }
+        
+        printf("%d. ", i, d->name);
+
+        if (d->description)
+            printf("%s\n", d->description);
+        else
+            printf("No description available\n");
+        
+        //std::cout << getDevAddr(d) << std::endl;
     }
     
     if (i == 0)
     {
-        printf("\nNo interfaces found! Make sure WinPcap is installed.\n");
+        printf("No interfaces found! Make sure WinPcap is installed.\n");
         return;
     } else {
         printf("\n");
@@ -83,6 +139,8 @@ void printAllDevs()
     
     /* 不再需要设备列表了，释放它 */
     pcap_freealldevs(alldevs);
+    
+    return;
 }
 
 #endif
