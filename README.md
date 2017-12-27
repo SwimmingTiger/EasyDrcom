@@ -1,8 +1,8 @@
-#EasyDrcom
-##Current Version: v0.8
+# EasyDrcom
+## Current Version: v0.8
 
 
-###License
+### License
 ---
     Copyright (C) 2014 Shindo
     
@@ -18,11 +18,11 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
-###民院修改版说明
+### 民院修改版说明
 ---
 该客户端已针对大连民族学院的网络环境进行修改，适用于民院宿舍网等仅需802.1x认证就能登陆的地区。
 
-####编译&安装方法：
+#### 编译&安装方法：
 
 Ubuntu用户直接执行
 
@@ -36,7 +36,7 @@ Ubuntu用户直接执行
 
 若系统内无 sudo 命令，请切换到 root 用户并执行 "./install_root" 命令进行安装。
 
-####使用说明：
+#### 使用说明：
     
 首次使用需要配置登陆用户名和密码，用任意编辑器打开
 
@@ -54,13 +54,13 @@ Ubuntu用户直接执行
 
 由于网络操作需要root权限，drcom命令会使用sudo执行操作，故你可能需要输入当前用户的密码才能继续。若您是用 "./install_root" 进行的安装，请切换到root用户执行drcom命令。
 
-####老虎会游泳修改于甲午年十月廿二
+#### 老虎会游泳修改于甲午年十月廿二
 
 我的电子邮箱是：hu60.cn@gmail.com。
 
 项目已修改，以下说明为原作者说明，仅供参考。
 
-###What's EasyDrcom?
+### What's EasyDrcom?
 ---
 **EasyDrcom** 是 **_Shindo_** 编写的为哈尔滨工业大学（威海）量身定制的**第三方Dr.COM客户端**，可在教学区、家属区、学生区使用，可运行于_Windows, Mac OS X, Linux_（包括_OpenWrt_）。 
 
@@ -68,9 +68,9 @@ Ubuntu用户直接执行
 
 有关如何使用 **EasyDrcom**, 请访问 http://bbs.ghtt.net/thread-1984091-1-1.html
 
-###Compile Tips
+### Compile Tips
 ---
-####下面以向Linux平台编译为例。
+#### 下面以向Linux平台编译为例。
 
 编译 **EasyDrcom** 是十分简单的：
 
@@ -90,7 +90,7 @@ _括号里标注的是作者使用的版本_
 
     g++ -DOPENWRT -DLINUX -Os -s -std=c++0x -o EasyDrcom md5.c main.cpp -lpcap -lpthread
 
-###Special Thanks
+### Special Thanks
 ---
 **EasyDrcom** 的诞生离不开无数前辈的努力，下面列出的是参照的项目：
 
